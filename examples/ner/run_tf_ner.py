@@ -310,8 +310,9 @@ def evaluate(args, strategy, model, tokenizer, labels, pad_token_label_id, mode)
     eval_dataset = strategy.experimental_distribute_dataset(eval_dataset)
     preds = None
     num_eval_steps = math.ceil(size / eval_batch_size)
-    master = master_bar(range(1))
-    eval_iterator = progress_bar(eval_dataset, total=num_eval_steps, parent=master, display=args["n_device"] > 1)
+    #master = master_bar(range(1))
+    #eval_iterator = progress_bar(eval_dataset, total=num_eval_steps, parent=master, display=args["n_device"] > 1)
+    eval_iterator = progress_bar(eval_dataset, total=num_eval_steps, display=args["n_device"] > 1)
     loss_fct = tf.keras.losses.SparseCategoricalCrossentropy(reduction=tf.keras.losses.Reduction.NONE)
     loss = 0.0
 
@@ -350,8 +351,10 @@ def evaluate(args, strategy, model, tokenizer, labels, pad_token_label_id, mode)
     for i in range(label_ids.shape[0]):
         for j in range(label_ids.shape[1]):
             if label_ids[i, j] != pad_token_label_id:
-                y_pred[i].append(labels[preds[i, j] - 1])
-                y_true[i].append(labels[label_ids[i, j] - 1])
+                #y_pred[i].append(labels[preds[i, j] - 1])
+                #y_true[i].append(labels[label_ids[i, j] - 1])
+                y_pred[i].append(labels[preds[i, j]])
+                y_true[i].append(labels[label_ids[i, j]])
 
     return y_true, y_pred, loss.numpy()
 
